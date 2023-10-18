@@ -1,0 +1,54 @@
+一、vue 路由钩子 大致可以分为三类：
+1、全局前置钩子（3个）=> beforeEach，beforeResolve，afterEach
+	beforeEach 函数有三个参数：
+		to：router 即将进入的路由对象
+		from：当前导航即将离开的路由
+		next：Function，进行管道中的一个钩子，如果执行完了，则导航的状态就是 confirmed（确认的）；否则为 false，终止导航。
+	beforeEach 函数不用传 next() 函数：
+		这类钩子主要作用于全局，一般用来判断权限等操作。
+2、单个路由里面的钩子（2个）
+	=> beforeEnter，beforeLeave
+		主要用于写 某个指定路由跳转时需要执行的逻辑。
+3、组件路由钩子（3个）
+	=> beforeRouterEnter，beforeRouterUpdate，beforeRouterLeave
+		都是写在组件里面，可以传三个参数，（to，from，next）
+
+一次完整的导航解析流程如下：
+> 1、导航被触发。
+> 2、在失活的组件里调用离开守卫。
+> 3、调用全局的 *beforeEach* 守卫。
+> 4、在重用的组件里调用 *beforeRouteUpdate* 守卫（*2.2+*）。
+> 5、在路由配置里调用 *beforeEnter*。
+> 6、解析异步路由组件。
+> 7、在被激活的组件里调用 *beforeRouteEnter*。
+> 8、调用全局的 *beforeResolve* 守卫（*2.5+*）。
+> 9、导航被确认。
+> 10、调用全局的 *afterEach* 钩子。
+> 11、触发 *DOM* 更新。
+> 12、用创建好的实例调用 *beforeRouteEnter* 守卫中传给 *next* 的回调函数。
+
+
+
+
+
+二、$router 和 $route 的区别：
+1、$router 是 VueRouter 的一个对象，通过 Vue.use(VueRouter) 和 Vue 构造函数得到一个 router 的实例对象，这个对象中是一个全局的对象，他包含了所有的路由，包含了许多关键的对象和属性。
+以 history 对象来举例：
+$router.push({path:'home'})：本质是向history栈中添加一个路由，在我们看来是切换路由，但本质是在添加一个 history 记录
+$router.replace({path:'home'})：替换路由，没有历史记录
+$router.push('/login') , 跳转到指定路由
+$router.go(-1)：页面路由跳转前进或者后退
+ 
+2、$route 是一个跳转的路由对象，每一个路由都会有一个 $route 对象，是一个局部的对象，可以获取对应的 name，path，params，query 等
+例：
+$route.path：字符串，等于当前路由对象的路径，会被解析为绝对路径，如/home/ews
+$route.params：对象，包含有 动态片段 和 全匹配片段 的键值对，不会拼接到路由的url后面
+$route.query：对象，包含路由中查询参数的键值对。会拼接到路由url后面
+$route.router：路由规则所属的路由器
+$route.matchd：数组，包含当前匹配的路径中所包含的所有片段所对象的配置参数对象
+$route.name：当前路由的名字，如果没有使用具体路径，则名字为空
+$route.hash：当前路由的 hash 值 (不带 #) ，如果没有 hash 值，则为空字符串。
+$route.fullPath：完成解析后的 URL，包含查询参数和 hash 的完整路径。
+$route.meta：路由元信息
+
+

@@ -1,0 +1,73 @@
+webpack  前端构建工具
+webpack 是一个打包模块化 js 的工具，可以通过 loader 转换文件，通过 plugin 扩展功能。
+
+一、核心概念
+（1）entry：入口，webpack 执行构建的第一步将从 Entry 开始，可抽象成输入。告诉 webpack 要使用哪个模块作为构建项目的起点，默认为 ./src/index.js
+（2）output：出口，告诉 webpack 在哪里输出它打包好的代码以及如何命名，默认为 ./dist
+（3）module：模块，在 webpack 里一切皆模块，一个模块对应着一个文件。webpack 会从配置的 Entry 开始递归找出所有依赖的模块。
+（4）chunk：多个文件组成一个代码块。可以将可执行的模块和他所依赖的模块组合成一个 chunk，用于代码合并与分割
+（5）loader：加载器（模块转换器），主要用于代码转换，比如 JS 代码降级，CSS 预编译、模块化等
+（6）plugin：扩展 webpack 功能的插件。
+	实现原理：本质上，webpack 的插件是一个带有 apply 函数的对象。当 webpack 创建好 compiler 对象后，会执行注册插件的 apply 函数，同时将 compiler 对象作为参数传入。在 apply 函数中，开发者可以通过 compiler 对象监听多个钩子函数的执行，不同的钩子函数对应 webpack 编译的不同阶段。当 webpack 进行到一定阶段后，会调用这些监听函数，同时将 compilation 对象传入。开发者可以使用 compilation 对象获取和改变 webpack 的各种信息，从而影响构建过程。
+（7）bundle：webpack 打包结果
+（8）tree shaking：树摇优化。在打包结果中，去掉没有用到的代码。
+（9）HMR：热更新。是指在运行期间，遇到代码更改后，无须重启整个项目，只更新变动的那一部分代码。
+（10）dev server：开发服务器。在开发环境中搭建的临时服务器，用于承载对打包结果的访问
+
+
+二、webpack 构建流程（原理） 
+（1）初始化参数：解析 webpack 配置参数，合并 shell 传入和 webpack.config.js 文件配置的参数，形成最后的配置结果。
+（2）开始编译：用上一步得到的参数初始化 Compiler 对象，加载所有配置的插件，执行对象的 run 方法开始执行编译。
+（3）确定入口：根据配置中的 entry 找出所有的入口文件。
+（4）编译模块：从入口文件出发，调用所有配置的 loader 对模块进行翻译，再把翻译后的内容转换成 AST，通过对 AST 的分析找出该模块依赖的模块，再 递归 本步骤直到所有入口依赖的文件都经过了本步骤的处理。
+（5）完成模块编译并输出：递归完事后，得到每个文件结果，包含每个模块以及他们之间的依赖关系，根据 entry 配置生成代码块 chunk。
+（6）输出完成：输出所有的 chunk 到文件系统。
+
+
+
+三、有哪些常见的 Loader？他们是解决什么问题的？
+（1）cache-loader：启用编译缓存
+（2）thread-loader：启用多线程编译
+（3）css-loader：加载 css，用于将 css 以 CommonJS 语法打包到 JS 中，支持模块化，压缩，文件导入等特性；
+	必须配合 style-loader 共同使用，只安装 css-loader 样式不会生效
+（4）style-loader：把css代码注入到 js 中，动态创建 style 标签，通过 dom 操作去加载 css；
+（5）image-loader：加载并且压缩图片文件
+（6）file-loader：文件输出到一个文件夹中，在代码中通过相对 url 去引用输出的文件；
+（7）url-loader：和 file-loader 类似，文件很小的时候可以 base64 方式吧文件内容注入到代码中。
+（8）less-loader： 将 less 代码转换成 css 代码
+（9）sass-loader： 用来解析sass文件，将 sass 代码转换成 css 代码，css 预处理器
+（10）vue-loader：用于编译 .vue 文件，将 Vue 单文件组件编译成 JavaScript 代码
+（11）babel-loader：把 es6 转成 es5，如果不做特殊处理，babel-loader 会对所有匹配的模块进行降级，这对于那些已经处理好兼容性问题的第三方库显得多此一举，因此可以使用 exclude 配置排除掉这些第三方库。
+（12）eslint-loader：通过 Eslint 检查 js 代码；
+（13）source-map-loader：加载额外的 source map 文件，方便调试。
+（14）worker-loader： 将一个模块打包成一个Web Worker，使得我们可以在前端代码中使用多线程技术来提高性能和响应速度
+
+
+
+例：处理图片，需要通过 loader 来处理。其中，url-loader 会把图片转换为 base64 编码，然后得到一个 dataurl，file-loader 则会将图片生成到打包目录中，然后得到一个资源路径。但无论是哪一种 loader，它们的核心功能，都是把图片内容转换成 JS 代码，因为只有转换成 JS 代码，webpack 才能识别。
+ 
+
+四、有哪些常见的 Plugin？他们是解决什么问题的？
+html-webpack-plugin：在打包结束后，⾃动生成⼀个 html 文件，并把打包生成的 js 模块引⼊到该 html 中
+clean-webpack-plugin：删除构建目录，在新一轮构建时，把之前的包都清理掉
+copy-webpack-plugin：复制文件到输出目录
+HotModuleReplacementPlugin：热更新的插件
+mini-css-extract-plugin：将 css 打包成单独文件的插件
+purifycss-webpack：去除无用的 css 代码
+optimize-css-assets-webpack-plugin：优化 css 打包体积
+uglify-js-plugin：对 JS 代码进行压缩、混淆
+compression-webpack-plugin：gzip 压缩
+***webpack-bundle-analyzer：分析打包结果，主要用于优化项目打包体积
+（1）uglifyjs-webpack-plugin：通过 UglifyJS 去压缩 js 代码；
+（2）commons-chunk-plugin：提取公共代码；
+（3）define-plugin：定义环境变量。
+ 
+
+
+五、 loader 和 plugin 的不同：它们都是 webpack 功能的扩展点
+作用不同：（1）loader 是加载器，主要用于代码转换，比如 JS 代码降级，CSS 预编译、模块化等
+	（2）plugin 是插件，webpack 打包流程中每个环节都提供了钩子函数，可以利用这些钩子函数参与到打包生命周期中，更改或增加 webpack 的某些功能，比如生成页面和 css 文件、压缩打包结果等
+用法不同：（1）loader 在module.rule 中配置。类型为数组，每一项都是 Object；
+	（2）plugin 是单独配置的，类型为数组，每一项都是 plugin 实例，参数通过构造函数传入。
+
+

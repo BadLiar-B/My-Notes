@@ -1,0 +1,56 @@
+一、组件通信：
+1、父子组件通信：
+prop：最常见的组件通信方式之一，由父组件传递到子组件
+event：最常见的组件通信方式之一，当子组件发生了某些事，可以通过event通知父组件
+style 和 class：父组件可以向子组件传递 style 和 class ，它们会合并到子组件的根元素中
+attribute：如果父组件传递了一些属性到子组件，但子组件并没有声明这些属性，则它们称之为 attribute，这些属性会直接附着在子组件的根元素上。通过$attrs获取。子组件可以通过 inheritAttrs: false 配置，禁止将 attribute 附着在子组件的根元素上。
+natvie 修饰符：在注册事件时，父组件可以使用 native 修饰符，将事件注册到子组件的根元素上
+$listeners：子组件可以通过 $listeners 获取父组件传递过来的所有事件处理函数
+v-model：
+sync 修饰符：和 v-model 的作用类似，用于双向绑定，不同点在 于v-model 只能针对一个数据进行双向绑定，而 sync 修饰符没有限制
+$parent 和 $children：在组件内部，可以通过 $parent 和 $children 属性，分别得到当前组件的父组件和子组件实例
+$slots 和 $scopedSlots：
+ref：父组件可以通过 ref 获取到子组件的实例
+
+2、跨组件通信：
+Provide 和 Inject
+router：如果一个组件改变了地址栏，所有监听地址栏的组件都会做出相应反应，最常见的场景就是通过点击router-link组件改变了地址，router-view 组件就渲染其他内容。
+vuex：适用于大型项目的数据仓库。例如登录状态、加入购物车、音乐播放等。
+store 模式：适用于中小型项目的数据仓库
+eventbus：组件通知事件总线发生了某件事，事件总线通知其他监听该事件的所有组件运行某个函数
+
+
+
+
+二、Vuex：
+vuex 是一个专为 Vue 应用程序开发的状态管理器，采用集中式存储管理应用的所有组件的状态。
+每一个 vuex 应用的核心就是 store（仓库）。“store” 基本上就是一个容器，它包含着应用中大部分的状态 (state)。
+
+为什么使用 vuex：由于组件只维护自身的状态(data)，组件创建时或者路由切换时，组件会被初始化，从而导致 data 也随之销毁。
+
+vuex 中一共有五个状态 State、Getters、Mutations、Actions、Modules
+1、State：所有的共享数据统一放到state中存储 和data相似，在 vuex 中 state 中定义数据，可以在任何组件中进行调用
+	使用：	一、$store.state.xxx
+		二、...mapState
+2、Getters：类似于 vue 中的 computed，进行缓存，对于 Store 中的数据进行加工处理形成新的数据
+3、Mutations：更改 Vuex 的 store 中的状态的唯一方法是提交 mutation。
+	方法一：使用 commit 触发 Mutation 操作
+	方法二：使用辅助函数进行操作（...mapMutations）
+4、Actions：Actions和Mutations相似，一般情况下同步操作使用 Mutations，异步操作使用 Actions
+	方法一：使用 dispatch 触发 Mutation 操作
+	方法二：使用辅助函数进行操作，方法同上
+5、Modules：由于使用单一状态树，应用的所有状态会集中到一个比较大的对象。当应用变得非常复杂时，store 对象就有可能变得相当臃肿。 为了解决以上问题，Vuex 允许我们将 store 分割成模块（module）。每个模块拥有自己的 state、mutation、action、getter
+
+
+
+
+对比：
+		vuex		global state	Provide&Inject
+组件数据共享	y		y		y
+可否脱离组件	y		y		n
+调试工具		y		n		y
+状态树		y		自行决定		自行决定
+量级		重		轻		轻
+
+
+

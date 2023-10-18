@@ -1,0 +1,41 @@
+一、跨标签页的通讯方式有哪些？
+1、BroadCast Channel（前提是同源页面）
+	BroadCast Channel 可以帮我们创建一个用于广播的通信频道。当所有页面都监听同一频道的消息时，其中某一个页面通过它发送的消息就会被其他所有页面收到。
+	通过 postMessage 方法，一个页面可以将消息发送到频道中，而其他页面则可以监听 message 事件来接收这些消息。通过这种方式是短线了一种实时通信的机制，可以在不同的页面之间传递信息，实现页面间的即时交流。
+
+2、Service Worker
+	Service Worker 实际上是浏览器和服务器之间的代理服务器，它最大的特点是在页面中注册并安装成功后，运行于浏览器后台，不受页面刷新的影响，可以监听和截拦作用域范围内所有页面的 HTTP 请求。
+	创建一个 Service Worker 文件，并且使用 live server 开启一个本地服务器，Service Worker 的目的在于离线缓存，转发请求和网络代理。
+
+3、LocalStorage window.onstorage 监听
+	在 Web Storage 中，每次将一个值存储到本地存储时，就会触发一个 storage 事件。
+	由事件监听器发送给回调函数的事件对象有几个自动填充的属性如下：
+		key：告诉我们被修改的条目的键。
+		newValue：告诉我们被修改后的新值。
+		oldValue：告诉我们修改前的值。
+		storageArea：指向事件监听对应的 Storage 对象。
+		url：原始触发 storage 事件的那个网页的地址。
+	在页面中我们安装了一个 storage 的事件监听器，安装之后只要是同一域下面的其他 storage 值发生改变，该页面下面的 storage 事件就会被触发。
+
+4、Shared Worker 定时器轮询（setInterval）setInterval)（前提是同源页面）
+	Shared Worker 接口代表一种特定类型的 worker，可以从几个浏览上下文中访问，例如几个窗口、iframe 或其他 worker。它们实现一个不同于普通 worker 的接口，具有不同的全局作用域。
+
+5、IndexedDB 定时器轮询（setInterval）
+	IndexedDB 是一种底层 API，用于在客户端存储大量的结构化数据（也包括文件/二进制大型对象（blobs））。该 API 使用索引实现对数据的高性能搜索。
+
+6、cookie 定时器轮询（setInterval）
+	我们同样可以通过定时器轮询的方式来监听 Cookie 的变化，从而达到一个多标签页通信的目的。
+
+7、window.open window.postMessage
+	window.postMessage( ) 方法可以安全地实现跨源通信。通常，对于两个不同页面的脚本，只有当执行它们的页面位于具有相同的协议（通常为 https），端口号（443为 https 的默认值），以及主机 (两个页面的模数 Document.domain设置为相同的值) 时，这两个脚本才能相互通信。window.postMessage( ) 方法提供了一种受控机制来规避此限制，只要正确的使用，这种方法就很安全。
+
+8、Websocket
+	WebSocket 协议在 2008 年诞生，2011 年成为国际标准。所有浏览器都已经支持了。
+	它的最大特点就是，服务器可以主动向客户端推送信息，客户端也可以主动向服务器发送信息，是真正的双向平等对话，属于服务器推送技术的一种。
+
+
+
+https://juejin.cn/post/7270155117705510968
+
+
+

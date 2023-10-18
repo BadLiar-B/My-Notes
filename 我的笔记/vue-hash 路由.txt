@@ -1,0 +1,56 @@
+一、hash 路由模式：
+	在浏览器中符号“#”，#以及#后面的字符称之为 hash，用 window.location.hash 读取。
+	特点：1、URL 中的 hash 值只是客户端的一种状态，向服务端发送请求的时候，hash 部分不会被发送。
+	2、hash 值得改变会在浏览器的历史记增加访问记录，所以可以通过浏览器的回退、前进控制 hash 值的改变。
+	3、可以通过 a 标签设置 href 值或者通过 js 给 location.hash 赋值来改变 hash 值。
+	4、可以通过 hashchang 事件来监听 hash 值的变化，从而对页面进行跳转（渲染）。
+	实现原理：路由的哈希模式其实是利用了 window.onhashchange 事件，也就是说你的 url 中的哈希值（#后面的值）如果有变化，就会自动调用 hashchange 的监听事件，在 hashchange 的监听事件内可以得到改变后的 url ，这样能够找到对应页面进行加载。
+
+
+
+二、history 路由模式：
+	history 采用 HTML5 的新特性；且提供了两个新方法： pushState()， replaceState() 可以对浏览器历史记录栈进行修改，以及 popState 事件的监听到状态变更。
+	特点：	1、pushState 方法、replaceState 方法，只能导致 history 对象发生变化，从而改变当前地址栏的 URL，但浏览器不会向后端发送请求，也不会触发 popstate 事件的执行。
+		2、popstate 事件的执行是在点击浏览器的前进后退按钮的时候，才会被触发，可以通过 popstate 事件来监听 URL 的变化，从而对页面进行跳转（渲染）。
+
+
+
+hash 路由模式 和 history 路由模式的区别：
+1、首先是在 URL 的展示上，hash 模式有“#”，history 模式没有
+2、刷新页面时，hash 模式可以正常加载到 hash 值对应的页面，而 history 没有处理的话，会返回 404，一般需要后端将所有页面配置重定向到首页路由
+3、在兼容性上，hash 可以支持低版本浏览器和 IE
+
+
+
+
+
+
+扩展：
+如何监听 pushstate 和 replacestate 的变化呢？
+History.replaceState 和 pushState 不会触发 popstate 事件，所以我们可以通过在方法中创建一个新的全局事件来实现 pushstate 和 replacestate 变化的监听。
+
+var _wr = function(type) {
+  var orig = history[type];
+  return function() {
+      var rv = orig.apply(this, arguments);
+     var e = new Event(type);
+      e.arguments = arguments;
+      window.dispatchEvent(e);
+      return rv;
+  };
+};
+history.pushState = _wr('pushState');
+history.replaceState = _wr('replaceState');
+
+这样就创建了 2 个全新的事件，事件名为 pushState 和 replaceState，我们就可以在全局监听：
+
+window.addEventListener('replaceState', function(e) {
+ console.log('THEY DID IT AGAIN! replaceState 111111');
+});
+window.addEventListener('pushState', function(e) {
+ console.log('THEY DID IT AGAIN! pushState 2222222');
+});
+这样就可以监听到 pushState 和 replaceState 行为。
+
+
+
