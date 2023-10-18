@@ -1,0 +1,100 @@
+一、概念：
+three.js 是一个基于 webgl 的 3D 图形编程框架（等同于 JavaScript 与 JQuery 的关系）
+three.js 以简单、直观的方式封装了 3d 图形编程中常用的对象
+
+二、创建程序：
+three.js 在创建一个程序的时候需要有三个基本对象：	
+	1、场景（screen）
+	2、相机 （camera）
+	3、渲染器 （renderer）
+	（4、几何图形（geometry））
+	拿电影来类比的话，场景对应于整个布景空间，相机是拍摄镜头，渲染器用来把拍摄好的场景转换成胶卷（对于网页来讲，是电脑屏幕）。 场景和相机代表了3D观察空间和数据模型，渲染器则包含了 WebGL 绘图上下文和着色器。
+
+三、步骤：
+1、创建场景： var scene = new THREE.Scene();
+2、创建相机：var camera = new THREE.PerspectiveCamera( 45, width / height, 1, 1000 );
+3、创建渲染器：var renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight); // 设置渲染器大小
+	document.body.appendChild(renderer.domElement); // 插入到页面中
+4、创建几何体：var geometry = new THREE.BoxGeometry(1, 1, 1);
+5、添加材质：var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+6、创建一个网孔（Mesh），网孔是用来承载几何模型的一个对象，还可以把材料应用到它上面，然后添加到场景中完成旋转动画。
+：var cube = new THREE.Mesh(geometry, material);
+7、将 网孔 添加到场景 scene 中：scene.add(cube);
+8、渲染页面：renderer.render(scene, camera);
+
+2、相机分类：new THREE.PerspectiveCamera()
+（1）、远景（透视）相机（PerspectiveCamera）
+	PerspectiveCamera( fov, aspect, near, far )
+	fov — 相机视锥体垂直视角
+	aspect — 相机视锥体宽高比
+	near — 相机视锥体近裁剪面
+f	ar — 相机视锥体远裁剪面。
+	例：var camera = new THREE.PerspectiveCamera( 45, width / height, 1, 1000 );
+	scene.add( camera );
+（2）、正交（正投影）相机（OrthographicCamera）
+OrthographicCamera( left, right, top, bottom, near, far )
+	left — 相机视椎体（Camera frustum）左面。
+	right — 相机视椎体（Camera frustum）右面。
+	top — 相机视椎体（Camera frustum）上面。
+	bottom — 相机视椎体（Camera frustum）下面。
+	near — 相机视椎体（Camera frustum）前面（靠近相机的这一面）。
+	far — 相机视椎体（Camera frustum）后面（远离相机的这一面）。
+	例子： var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
+	 scene.add( camera );
+
+3、渲染器：new THREE.WebGLRenderer() 传的参数：Object
+var renderer = new THREE.WebGLRenderer({
+	***canvas - 一个供渲染器绘制其输出的canvas 它和下面的domElement属性对应。 如果没有传这个参数，会创建一个新canvas
+	***precision - 着色器精度. 可以是 "highp", "mediump" 或者 "lowp". 如果设备支持，默认为"highp"
+	***antialias - 是否执行抗锯齿。默认为 false
+	context - 可用于将渲染器附加到已有的渲染环境(RenderingContext)中。默认值是 null
+	alpha - controls the default clear alpha value. When set to true, the value is 0. Otherwise it's 1. Default is false.
+	premultipliedAlpha - renderer 是否假设颜色有 premultiplied alpha. 默认为 true
+	stencil - 绘图缓存是否有一个至少8位的模板缓存 (stencil buffer)。默认为 true
+	preserveDrawingBuffer -是否保留缓直到手动清除或被覆盖。 默认 false.
+	powerPreference - 提示用户代理怎样的配置更适用于当前WebGL环境。 可能是 "high-performance", "low-power" 或 "default"。默认是 "default"
+	failIfMajorPerformanceCaveat - 检测渲染器是否会因性能过差而创建失败。默认为 false
+	depth - 绘图缓存是否有一个至少6位的深度缓存(depth buffer )。 默认是 true
+	logarithmicDepthBuffer - 是否使用对数深度缓存。如果要在单个场景中处理巨大的比例差异，就有必要使用。默认是false
+})
+
+4、几何体：new THREE.BoxGeometry(1, 1, 1);
+	BoxGeometry：立方缓冲几何体
+	CircleGeometry：圆形缓冲几何体
+	ConeGeometry：圆锥缓冲几何体
+	CylinderGeometry：圆柱缓冲几何体
+	DodecahedronGeometry：十二面缓冲几何体
+	EdgesGeometry：边缘几何体
+	ExtrudeGeometry：挤压缓冲几何体
+
+5.1、材质： new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+	Material：材质
+	LineBasicMaterial：基础线条材质
+	LineDashedMaterial：虚线材质     
+	MeshBasicMaterial：基础网格材质
+	MeshDepthMaterial：深度网格材质
+
+5.2、光源：new THREE.AmbientLight( 0x404040 )
+	环境光：AmbientLight（环境光会均匀的照亮场景中的所有物体。环境光不能用来投射阴影，因为它没有方向）
+	平行光：DirectionalLight（平行光是沿着特定方向发射的光。这种光的表现像是无限远，从它发出的光线都是平行的）（模拟太阳光）
+	半球光：HemisphereLight（光源直接放置于场景之上，光照颜色从天空光线颜色渐变到地面光线颜色）
+	点光源：PointLight（从一个点向各个方向发射的光源）（模拟灯泡发出的光）
+	平面光光源：RectAreaLight（平面光光源从一个矩形平面上均匀地发射光线）（模拟像明亮的窗户或者条状灯光光源）
+	聚光灯：SpotLight（光线从一个点沿一个方向射出，随着光线照射的变远，光线圆锥体的尺寸也逐渐增大）
+
+5.3、纹理：new THREE.TextureLoader().load( "textures/water.jpg" )
+纹理实现步骤：加载纹理资源、设置纹理材质、绘制网格结构、添加到场景
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,90 @@
+vue2 生命周期：一个 Vue 实例从创建到销毁的过程，就是生命周期
+
+    1、new Vue之后，发生了什么？
+           创建 vue 实例：（和创建组件的流程基本一致）
+           页面第一次加载会触发四个钩子：beforeCreate ， created ， beforeMount ，mounted
+	首先做一些初始化的操作，主要是设置一些私有属性到实例中
+	运行生命周期钩子函数 beforeCreate
+	进入注入流程：处理属性、computed、methods、data、provide、inject，最后使用代理模式将它们挂载到实例中
+	运行生命周期钩子函数 created
+	生成 render 函数：如果有配置，直接使用配置的 render，如果没有，使用运行时编译器，把模板编译为 render
+	运行生命周期钩子函数 beforeMount
+	创建一个 Watcher，传入一个函数 updateComponent，该函数会运行 render，把得到的 vnode 再传入 _update 函数执行。
+	在执行 render 函数的过程中，会收集所有依赖，将来依赖变化时会重新运行 updateComponent 函数
+	在执行 _update 函数的过程中，触发 patch 函数，由于目前没有旧树，因此直接为当前的虚拟 dom 树的每一个普通节点生成 elm 属性，即真实 dom。
+	如果遇到创建一个组件的 vnode，则会进入组件实例化流程，该流程和创建 vue 实例流程基本相同，最终会把创建好的组件实例挂载 vnode 的 componentInstance 属性中，以便复用。
+	运行生命周期钩子函数 mounted
+
+
+
+      2、数据改变之后，发生了什么？（重渲染）
+	数据变化后，所有依赖该数据的 Watcher 均会重新运行，这里仅考虑 updateComponent 函数对应的 Watcher
+	Watcher 会被调度器放到 nextTick 中运行，也就是微队列中，这样是为了避免多个依赖的数据同时改变后被多次执行
+	运行生命周期钩子函数 beforeUpdate
+	updateComponent 函数重新执行
+	在执行 render函数的过程中，会去掉之前的依赖，重新收集所有依赖，将来依赖变化时会重新运行 updateComponent 函数
+	在执行 _update 函数的过程中，触发 patch 函数。
+	新旧两棵树进行对比。
+	普通 html 节点的对比会导致真实节点被创建、删除、移动、更新
+	组件节点的对比会导致组件被创建、删除、移动、更新
+	当新组件需要创建时，进入实例化流程
+	当旧组件需要删除时，会调用旧组件的 $destroy 方法删除组件，该方法会先触发生命周期钩子函数 beforeDestroy，然后递归调用子组件的 $destroy 方法，然后触发生命周期钩子函数 destroyed
+	当组件属性更新时，相当于组件的 updateComponent 函数被重新触发执行，进入重渲染流程，和本节相同。
+	运行生命周期钩子函数 updated
+
+
+
+• beforeCreate：是 new Vue( ) 之后触发的第一个钩子，在当前阶段 data、methods、computed 以及 watch 上的数据和方法都不能被访问。
+• created：在实例创建完成后发生，当前阶段已经完成了数据观测，也就是可以使用数据，更改数据，在这里更改数据不会触发 updated 函数。可以做一些初始数据的获取，在当前阶段无法与 DOM 进行交互，如果非要想，可以通过 vm.$nextTick 来访问 DOM 。
+• beforeMount：发生在挂载之前，在这之前 template 模板已导入渲染函数编译。而当前阶段虚拟 DOM 已经创建完成，即将开始渲染。在此时也可以对数据进行更改，不会触发 updated。
+• mounted：在挂载完成后发生，在当前阶段，真实的 DOM 挂载完毕，数据完成双向绑定，可以访问到 DOM 节点，使用 $refs 属性对 DOM 进行操作。
+• beforeUpdate：发生在更新之前，也就是响应式数据发生更新，虚拟 DOM 重新渲染之前被触发，你可以在当前阶段进行更改数据，不会造成重渲染。
+• updated：发生在更新完成之后，当前阶段组件 DOM 已完成更新。要注意的是避免在此期间更改数据，因为这可能会导致无限循环的更新。
+• beforeDestroy：发生在实例销毁之前，在当前阶段实例完全可以被使用，我们可以在这时进行善后收尾工作，比如清除计时器。
+• destroyed：发生在实例销毁之后，这个时候只剩下了 DOM 空壳。组件已被拆解，数据绑定被卸除，监听被移出，子实例也统统被销毁。
+
+
+
+
+使用了 keep-alive 页面第一次加载会触发会执行5个生命周期：
+	beforeCreate、created、beforeMount、mounted、activated
+如果使用了 keep-alive 会多俩个生命周期：activated、deactivated
+如果使用 keep-alive 第二次或者 n 次，每次都会执行一个生命周期
+
+	keep-alive 组件是 vue 的内置组件，用于缓存内部组件实例。这样做的目的在于，keep-alive 内部的组件切回时，不用重新创建组件实例，而直接使用缓存中的实例，一方面能够避免创建组件带来的开销，另一方面可以保留组件的状态。
+	keep-alive 具有 include 和 exclude 属性，通过它们可以控制哪些组件进入缓存。另外它还提供了 max 属性，通过它可以设置最大缓存数，当缓存的实例超过该数时，vue 会移除最久没有使用的组件缓存。
+	受 keep-alive 的影响，其内部所有嵌套的组件都具有两个生命周期钩子函数，分别是 activated 和 deactivated，它们分别在组件激活和失活时触发。第一次 activated 触发是在 mounted 之后
+
+在具体的实现上，keep-alive 在内部维护了一个 key 数组和一个缓存对象
+	// keep-alive 内部的声明周期函数
+	created () {
+	  this.cache = Object.create(null)
+	  this.keys = []
+	}
+key 数组记录目前缓存的组件 key 值，如果组件没有指定 key 值，则会为其自动生成一个唯一的 key 值。
+
+	cache 对象以 key 值为键，vnode 为值，用于缓存组件对应的虚拟 DOM。在 keep-alive 的渲染函数中，其基本逻辑是判断当前渲染的 vnode 是否有对应的缓存，如果有，从缓存中读取到对应的组件实例；如果没有则将其缓存。当缓存数量超过 max 数值时，keep-alive 会移除掉 key 数组的第一个元素
+
+
+
+Vue3.0 中可以继续使用 Vue2.x 中的生命周期钩子，但有有两个被更名：
+  - `beforeDestroy`改名为 `beforeUnmount`
+  - `destroyed`改名为 `unmounted`
+- Vue3.0 也提供了 Composition API 形式的生命周期钩子，与 Vue2.x 中钩子对应关系如下：
+  - `beforeCreate`===>`setup()`
+  - `created`=======>`setup()`
+  - `beforeMount` ===>`onBeforeMount`
+  - `mounted`=======>`onMounted`
+  - `beforeUpdate`===>`onBeforeUpdate`
+  - `updated` =======>`onUpdated`
+  - `beforeDestroy` ==>`onBeforeUnmount`
+  - `destroyed` =====>`onUnmounted`
+
+
+vue3 中组合式 api 生命周期钩子函数有变化吗？
+setup 是围绕 beforeCreate 和 created 生命周期钩子运行的，所以不需要显示的定义它们。其他的钩子都可以编写到 setup 内。
+值得注意的是组合式 API 中的钩子函数，通过在生命周期钩子前面加上 on 来访问组件的生命周期钩子。需要注册，并且只能在 setup 期间同步使用，因为它们依赖于内部的全局状态来定位当前组件实例。
+
+
+
+

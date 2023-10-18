@@ -1,0 +1,61 @@
+一、数据类型
+基本数据类型：null、undefined、string、boolean、number、（ES6新增：symbol、bigInt）
+引用数据类型：object、array、date、regexp、function
+
+1、区别：
+声明变量时 内存分配不同：
+	前者由于占据的空间大小固定且较小，会被存储在栈当中，也就是变量访问的位置；
+	后者则存储在堆当中，变量访问的其实是一个指针，它指向存储对象的内存地址。
+参数传递不同：
+	虽然函数的参数都是按值传递的，但是引用值传递的值是一个内存地址，实参和形参指向的是同一个对象，
+	所以函数内部对这个参数的修改会体现在外部。原始值只是把变量里的值传递给参数，之后参数和这个变量互不影响。
+动态属性：
+	原始值：无法添加动态属性
+	引用值：可以添加动态属性
+
+
+
+二、null+undefined+undeclared
+1、null：表示"没有对象"，即该处不应该有值，转为数值时为 0。
+	典型用法是：
+	作为函数的参数，表示该函数的参数不是对象。
+	作为对象原型链的终点。
+	console.log(typeof null);  // "object"
+2、undefined：表示"缺少值"，就是此处应该有一个值，但是还没有定义，转为数值时为 NaN。
+	典型用法是：
+	变量被声明了，但没有赋值时，就等于 undefined。
+	调用函数时，应该提供的参数没有提供，该参数等于 undefined。
+	对象没有赋值的属性，该属性的值为 undefined。
+	函数没有返回值时，默认返回 undefined。
+	console.log(typeof undefined);  // "undefined"
+3、undeclared：js 语法错误，没有申明直接使用，js 无法找到对应的上下文。
+
+
+
+三、typeOf+instanceOf+constructor+Object.prototype.toString.call(data)
+typeOf：只能检测基本类型 除 null，操作符返回一个字符串，表示未经计算的操作数的类型
+instanceOf：能检测出引用类型，不能检测出基本类型，且不能跨 iframe
+	运算符测试构造函数的原型属性是否出现在对象的原型链中的任何位置
+	onsole.log(new Function() instanceof Function);  // true
+constructor：基本能检测所有类型除 null、undefined ，constructor 易被修改不能跨 iframe
+Object.prototype.toString.call(data)：所有类型（来获取一个格式为 "[object 类型]" 的字符串）
+（es6 引入 symbol ，表示独一无二的值）
+
+
+
+四、示例：
+判断是否是数组类型：
+           if( arr.__proto__.constructor===Array&&arr instanceof Array===true){     }
+判断变量类型：
+function getType(data) {
+  let type = typeof data;
+  console.log(type, "type");
+  if (type !== "object") {
+    return type;
+  }
+  console.log(Object.prototype.toString.call(data), "prototype");
+  return Object.prototype.toString
+    .call(data)
+    .replace(/^\[object (\S+)\]$/, "$1");
+}
+

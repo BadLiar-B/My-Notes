@@ -1,0 +1,44 @@
+ajax 和 axios 的区别：
+axios 是通过 Promise 实现对 ajax 技术的一种封装，就像 jquery 对 ajax 的封装一样。
+简单来说就是 ajax技术实现了局部数据的刷新，axios 实现了对 ajax 的封装，axios 有的 ajax 都有，ajax 有的 axios 不一定有。
+总结一句话就是 axios 是 ajax ，ajax 不止 axios。
+
+ajax：
+1、什么是 ajax
+Ajax 是对原生 XHR 的封装，为了达到我们跨越的目的，增添了对 JSONP 的支持。
+异步的 javascript 和 xml ，ajax 不是一门新技术，而是多种技术的组合，用于快速的创建动态页面，能够实现无刷新更新数据从而提高用户体验。
+　　属性：url、method、dataType、beforeSend、success、error…
+2、ajax 的原理？
+由客户端请求 ajax 引擎，再由 ajax 引擎请求服务器，服务器作出一系列响应之后返回给 ajax 引擎，由 ajax 引擎决定将这个结果写入到客户端的什么位置。实现页面无刷新更新数据。
+3、核心对象？XMLHttpRequest
+4、ajax 优缺点
+优点：1、无刷新更新数据。2、异步与服务器通信。3、前端和后端负载平衡。4、基于标准被广泛支持。5、界面与应用分离
+缺点：1、ajax 不能使用 Back 和 history 功能，即对浏览器机制的破坏。2、安全问题 ajax暴露了与服务器交互的细节。3、对收索引擎的支持比较弱。4、破坏程序的异常处理机制。5、违背 URL 和资源定位的初衷。6、ajax 不能很好的支持移动设备。7、太多客户端代码造成开发上的成本
+5、ajax 请求的五个步骤
+1、创建 XMLHttpRequest 异步对象
+2、设置回调函数
+3、使用 open 方法与服务器建立连接
+4、向服务器发送数据
+5、在回调函数中针对不同的响应状态进行处理
+
+axios：
+1、axios 是什么
+Axios 是一个基于 Promise 的 HTTP 库，可以用在浏览器和 node.js 中；是请求资源的模块；通过promise对ajax的封装。
+　　属性：url、method、data、responseType、.then、.catch…
+2、axios有那些特性？
+1、在浏览器中创建 XMLHttpRequests
+2、在 node.js 则创建http请求
+3、支持 Promise API
+4、支持拦截请求和响应
+5、转换请求和响应数据
+6、取消请求
+7、自动转换成 JSON 数据格式
+8、客户端支持防御 XSRF
+axios 中的发送字段的参数是 data 跟 params 两个，两者的区别在于 params 是跟请求地址一起发送的，data 的作为一个请求体进行发送
+params 一般适用于 get 请求，data 一般适用于 post put 请求。
+
+params 和 query 的区别
+        用法：query 要用 path 来引入，params 要用 name 来引入，接收参数都是类似的，分别是 this.$route.query.name 和this.$route.params.name 
+        url 地址显示：query 更加类似于我们 ajax 中 get 传参，params 则类似于 post，说的再简单一点，前者在浏览器地址栏中显示参数，后者则不显示
+        注意点：query 刷新不会丢失 query 里面的数据，params 刷新会丢失 params 里面的数据。
+

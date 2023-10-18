@@ -1,0 +1,74 @@
+浅拷贝
+      对于基本数据类型的成员变量，浅拷贝直接进行值传递，也就是将属性值复制了一份给新的成员变量
+      对于引用数据类型的成员变量，比如成员变量是数组、某个类的对象等，浅拷贝就是引用的传递，也就是将成员变量的引用（内存地址）复制了一份给新的成员变量，他们指向的是同一个事例。在一个对象修改成员变量的值，会影响到另一个对象中成员变量的值。
+方法一：扩展运算符（...）复制对象和数组 
+使用：const copyOfObject = {...originalObject};
+方法二：Object.assign() （工作方式和扩展运算符类似）
+使用：const copy2 = Object.assign({}, original);
+方法三：Object.getOwnPropertyDescriptors()和Object.defineProperties()
+使用：function copyAllOwnProperties(original) {
+	  return Object.defineProperties(
+   	 {}, Object.getOwnPropertyDescriptors(original));
+	}
+方法四、slice实现：var b = a.slice();
+方法五、concat实现：var b = a.concat()
+
+
+
+深拷贝
+      对于基本数据类型，深拷贝复制所有基本数据类型的成员变量的值
+      对于引用数据类型的成员变量，深拷贝申请新的存储空间，并复制该引用对象所引用的对象，也就是将整个对象复制下来。所以在一个对象修改成员变量的值，不会影响到另一个对象成员变量的值。
+方法一：通过嵌套扩展运算符实现深拷贝
+使用：	const original = {name: '789', work: {address: 'BeiJing'}};
+	const copy = {name: original.name, work: {...original.work}};
+	original.work !== copy.work // 指向不同的引用地址
+方法二：使用 JSON 实现数据的深拷贝
+使用：	function jsonDeepCopy(original) {
+ 	 return JSON.parse(JSON.stringify(original));
+	}
+	（弊端：
+	1、如果 obj 里面存在时间对象，JSON.parse(JSON.stringify(obj)) 之后，时间对象变成了字符串。
+	2、如果 obj 里有 RegExp、Error 对象，则序列化的结果将只得到空对象。
+	3、如果 obj 里有函数，undefined，则序列化的结果会把函数， undefined 丢失。
+	4、如果 obj 里有 NaN、Infinity（浮点数的最大上线） 和 -Infinity（浮点数的最小下线），则序列化的结果会变成 null。
+	5、JSON.stringify() 只能序列化对象的可枚举的自有属性。如果 obj 中的对象是有构造函数生成的， 则使用 JSON.parse(JSON.stringify(obj)) 深拷贝后，会丢弃对象的 constructor。
+	6、如果对象中存在循环引用的情况也无法正确实现深拷贝，会报错）
+
+方法三：递归函数实现深拷贝
+/* // 深拷贝
+function clone(source){
+  let target ={}
+  for(let i in source){
+    if(source.hasOumProperty(i)){
+      if(typeof source[i]==='object'){
+        target[i]=clone(source[i])
+      }else{
+        target[i]=source[i]
+        
+      }
+    }
+  }
+  return target
+} */
+
+
+
+// 函数深拷贝
+const deepCopyObj = (obj = {}) => {
+    // 变量先置空
+    let newObj = null;
+    // 判断是否需要继续进行递归
+    if (typeof obj === "object" && obj !== null) {
+        newObj = obj instanceof Array ? [] : {};
+        // 进行下一层递归克隆
+        for (let i in obj) {
+            newObj[i] = typeof obj[i] === "object" ? copy(obj[i]) : obj[i];
+            copyObj(obj[i]);
+        }
+      } else {
+      // 如果不是对象直接赋值
+        newObj = obj;
+    }
+    return newObj;
+};
+

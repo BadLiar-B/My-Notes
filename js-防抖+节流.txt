@@ -1,0 +1,82 @@
+一、函数防抖（debounce）某一段时间内只执行一次
+	在事件被触发 n 秒后再执行回调函数，如果在这 n 秒内又被触发，则重新计时。
+	通俗讲：当一个事件被触发，准备执行事件函数前，会等待一定的时间，如果没有再次被触发，那么就执行，如果被触发了，那就本次作废，重新从新触发的时间开始计算，并再次等待 1 秒，直到能最终执行！
+
+应用：搜索框输入、窗口大小 resize 变化
+/**
+ * 函数防抖
+ * @param {function} func 防抖函数
+ * @param {number} delay 延迟时间
+ */
+function debounce(func, delay) {
+    var timerId = null; // 定时器id
+    return function (...args) {
+        if (timerId) {
+            // 如果有值，说明目前正在等待中，清除它
+            clearTimeout(timerId);
+        }
+        // 重新开始计时
+        timerId = setTimeout(() => {
+            func.call(this, ...args);
+        }, delay);
+    };
+}
+
+
+
+二、函数节流（throttle）间隔时间执行
+指 在一定时间范围内，用户触发多次，只会执行一次，以达到防止用户频繁操作的目的。
+节流如字面意思，会稀释函数的执行频率。
+
+应用：鼠标高频点击、scroll 事件、表单提交事件
+/**
+ *
+ * @param {function} func 节流函数
+ * @param {number} delay 延迟时间
+ * @returns
+ */
+function throttle(func, delay) {
+    var args; // 存储函数参数
+    var previousTime = 0; // 一开始的默认时间
+    return function () {
+        let that = this;
+        let nowTime = new Date(); // 获取最新的时间戳
+        let args = arguments; // 获取参数
+        // 进行时间戳的判断，如果超出规定时间，则执行
+        if (nowTime - previousTime > delay) {
+            func.apply(that, args);
+            previousTime = nowTime;
+        }
+    };
+}
+
+
+
+（如果想要第一次执行，最后一次也执行，就要加一个定时器，在延迟时间后执行函数）
+例：
+function throttle(func, delay) {
+    var args; // 存储函数参数
+    var previousTime = 0; // 一开始的默认时间
+    let timeoutId; // 定时器id
+    return function () {
+        let that = this;
+        let nowTime = new Date(); // 获取最新的时间戳
+        let args = arguments; // 获取参数
+        // 进行时间戳的判断，如果超出规定时间，则执行
+        if (nowTime - previousTime > delay) {
+            func.apply(that, args);
+            previousTime = nowTime;
+        } else {
+            // 如果存在延迟执行的定时器，则清除它
+            clearTimeout(timeoutId);
+            // 设置新的定时器，在延迟时间后执行函数
+            timeoutId = setTimeout(function () {
+                func.apply(that, args);
+                previousTime = nowTime;
+            }, delay);
+        }
+    };
+}
+
+
+

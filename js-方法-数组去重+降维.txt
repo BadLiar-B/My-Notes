@@ -1,0 +1,56 @@
+一、数组去重
+1、双循环 ---- 双重循环 + splice （返回修改后的参数数组）
+双重循环，第一层循环，所有数据，第二层循环，从第一层循环的下标开始，向后循环，遇到重复的选项，则直接用splice删除相应的选项，最终返回去重后的数组。
+
+2、单循环+ indexof ----新建一个只有原数组第一项的新数组 + 循环原数组 + indexof 判断每项是否在新数组中已经存在，不存在则推入新数组
+定义一个新数组，并存放原数组的第一个元素，然后将原素组和新数组的元素对比，若不同则存放在新数组中。
+
+3、sort 排序后循环数组 + 相领元素比较
+先将原数组排序,再把每一项与前一位比较，相同则删除，同时i不增加，否则i++
+
+4、利用判断对象属性是否存在的方法 + 新数组 ------ 推荐！！！
+利用对象属性存在的特性，如果没有该属性则存入新数组。
+function unique(arr) {
+      var result = []; // 结果数组
+      for (var i = 0; i < arr.length; i++) {
+           if (!result.includes(arr[i])) {
+               result.push(arr[i]);
+           }
+      }
+      return result;
+}
+
+5、使用 ES6 的 Set 方法 (new Set())
+ES6 提供了新的数据结构 Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。
+function unique(arr) {
+      return [...new Set(arr)]
+}
+
+
+
+
+
+二、数组降维
+1、二维降一维
+（1）reduce() 方法
+const oldArr = [1, 2, [3, 4]];
+const newArr = oldArr.reduce((prev, curr) => (prev.concat(curr)), []);
+console.log(newArr); // [1, 2, 3, 4]
+
+（2）concat() 方法
+const oldArr = [1, 2, [3, 4]];
+const newArr = [].concat(...oldArr);
+const newnewArr = Array.prototype.concat.apply([], oldArr);
+console.log(newArr);// [1, 2, 3, 4]
+console.log(newnewArr);// [1, 2, 3, 4]
+
+（3）flat() 方法
+const oldArr = [1, 2, [3, 4]];
+const newArr = oldArr.flat();
+console.log(newArr);// [1, 2, 3, 4]
+
+2、递归降维
+forEach 递归
+reduce 递归
+
+

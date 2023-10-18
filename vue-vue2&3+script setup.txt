@@ -1,0 +1,52 @@
+vue 同一要素上的 v-if 和 v-for 的优先级不同，vue2 中v-for 优先级高，vue3 中 v-if 优先级高
+vue2 使用 es5 的 object.definePropert() 进行劫持数据，是结合发布订阅模式来实现的
+vue3 使用es6的 proxyApi 对数据进行代理
+vue3 新增了 provide/inject 通信方式
+
+
+
+vue 内部根据功能可以被分为三个大的模块：响应性（reactive）、运行时（runtime）、编辑器（compiler），以及一些小的功能点。
+vue2 与 vue3 的区别，从三个方面讲：
+一、响应性（reactive）
+	1、vue2 采用数据劫持结合发布订阅模式（PubSub 模式）的方式，通过 Object.defineProperty 来劫持各个属性的 setter、getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
+	但是 Object.defineProperty 只能监听指定对象的指定属性的 getter 行为和 setter 行为，所以会出现一些问题。例如：我们在 data 中声明了一个对象 person，但是在后期为 person 增加了新的属性，那么这个新的属性就会失去响应性。我们可以通过 Vue.$set 方法来增加指定对象的指定属性的响应性。但是这种方式，在 vue 的自动响应性机制中是不合理的。
+	2、所以，在 vue3 中，vue 引入了代理（Proxy）的概念。我们可以利用 Proxy 直接代理一个普通对象，得到一个 proxy 实例 的代理对象。在 vue3 中，这个过程通过 reactive 这个方法进行实现。
+	但是 proxy 只能实现代理复杂数据类型，所以 vue 额外提供了 ref 方法，用来处理简单数据类型的响应性。ref 本质上并没有进行数据的监听，而是构建了一个 RefImpl 的类，通过 set 和 get 标记了 value 函数，以此来进行的实现。所以 ref 必须要通过 .value 进行触发，之所以要这么做本质是调用 value 方法。
+
+二、运行时（runtime）
+	所谓的运行时，大多数指的是 render 渲染器，渲染器本质上是一个对象，内部主要三个方法：render、hydrate、createAPP，其中 render 主要处理渲染逻辑，hydrate 主要处理服务端渲染逻辑，而 createApp 就是创建 vue 实例的方法。
+	这里主要来说 render 渲染函数，vue3 中为了保证宿主环境与渲染逻辑的分离，把所有与宿主环境相关的逻辑进行了抽离，通过接口的形式进行传递。这样做的目的是其实是为了解绑宿主环境与渲染逻辑，以保证 vue 在非浏览器端的宿主环境下可以正常渲染。
+
+三、编辑器（compiler）
+	vue 中的 compiler 其实是一个 DSL（特定领域下专用语言编辑器），其目的是为了把 template 模板编译成 render 函数。逻辑主要分成了三大步，parse、transform、generate。其中 parse 的作用是为了把 template 转化为 AST（抽象语法树），transform 可以把 AST（抽象语法树）转化为 JavaScript AST，最后由 generate 把 JavaScript AST 转化为 render 函数。
+
+	（vue 模版编译的原理：Vue 的编译过程就是将 template 转化为 render 函数的过程
+	首先解析模版，生成 AST 语法树(一种用 JavaScript 对象的形式来描述整个模板)。 使用大量的正则表达式对模板进行解析，遇到标签、文本的时候都会执行对应的钩子进行相关处理。
+	Vue 的数据是响应式的，但其实模板中并不是所有的数据都是响应式的。有一些数据首次渲染后就不会再变化，对应的 DOM 也不会变化。那么优化过程就是深度遍历 AST 树，按照相关条件对树节点进行标记。这些被标记的节点(静态节点)我们就可以跳过对它们的比对，对运行时的模板起到很大的优化作用。
+	编译的最后一步是将优化后的 AST 树转换为可执行的代码。）
+
+四、其它变化
+	其他的变化，比如 vue3 新增的 composition API。composition API 在 vue3.0 和 vue3.2 中会有一些不同的呈现，比如说：最初的 composition API 以 setup 函数作为入口函数， setup 函数必须返回两种类型的值：第一是对象，第二是函数。
+当 setup 函数返回对象时，对象中的数据或方法可以在 template 中被使用。当 setup 函数返回函数时，函数会被作为 render 函数。	但是这种 setup 函数的形式并不好，因为所有的逻辑都集中在 setup 函数中，很容易出现一个巨大的 setup 函数。所以 vue3.2 的时候，新增了一个 script setup 的语法糖，来解决这个问题，简化了组合式 API 的写法，并且运行性能更好。
+
+除此之外，还有比如：
+	源码组织方式变化：使用 TS 重写
+	编译优化：vue2 通过标记静态根节点优化 diff，Vue3 标记和提升所有静态根节点，diff 的时候只需要对比动态节点内容
+	打包体积优化：移除了一些不常用的api（inline-template、filter）
+	生命周期的变化：使用 setup 代替了之前的 beforeCreate 和 created
+	Vue3 的 template 模板支持多个根标签
+	Vuex 状态管理：创建实例的方式改变，Vue2 为 new Store , Vue3为 createStore
+	Route 获取页面实例与路由信息：vue2 通过 this 获取 router 实例，vue3 通过使用 getCurrentInstance/ userRoute和 userRouter 方法获取当前组件实例
+	Props 的使用变化：vue2 通过 this 获取 props 里面的内容，vue3 直接通过 props
+	父子组件传值：vue3 在向父组件传回数据时，如使用的自定义名称，如 backData，则需要在 emits 中定义一下
+
+			
+
+
+使用 script setup 语法糖的特点：
+属性和方法无需返回，可以直接使用。
+引入组件的时候，会自动注册，无需通过 components 手动注册。
+使用 defineProps 接收父组件传递的值。
+useAttrs 获取属性，useSlots 获取插槽，defineEmits 获取自定义事件。
+默认不会对外暴露任何属性，如果有需要可使用 defineExpose 。
+

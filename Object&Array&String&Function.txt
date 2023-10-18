@@ -1,0 +1,90 @@
+String.prototype.charAt()	返回一个由给定索引处的单个 UTF-16 码元构成的新字符串
+String.fromCharCode()	返回使用指定的 Unicode 值序列创建的字符串
+String.fromCodePoint()	返回使用指定的码位序列创建的字符串
+String.raw()		返回从原始模板字符串创建的字符串
+String.prototype.length	反映字符串的 length。只读
+String.prototype.concat()	合并两个（或更多）字符串的文本并返回一个新字符串
+String.prototype.includes()	确定调用字符串是否包含 searchString
+String.prototype.startsWith()	确定调用字符串是否以字符串 searchString 的字符开头
+String.prototype.endsWith()	确定字符串是否以字符串 searchString 的字符结尾
+String.prototype.indexOf()	返回在调用 String 对象中第一次出现的 searchValue 的索引，未找到返回 -1
+String.prototype.replace()	用于使用 replaceWith 替换出现的 searchFor。searchFor 可以是字符串或正则表达式，replaceWith 可以是字符串或函数
+String.prototype.toLowerCase()	将该字符串转换为小写形式
+String.prototype.toUpperCase()	将该字符串转换为大写形式
+String.prototype.split()	返回一个由在出现子字符串 sep 时拆分调用的字符串然后填充的字符串数组
+String.prototype.slice()	提取字符串的一部分并返回一个新字符串，开始，结束  包前不包后
+String.prototype.substr()  	截取字符串 ，俩参数 ，第二个参数为多少个
+String.prototype.substring()	截取字符串，开始，结束  包前不包后
+String.prototype.trim()	修剪字符串开头和结尾的空格
+
+
+
+
+
+Object.is()		判断两个数据是否相等，基本上跟严格相等（===）是一致的
+			除了：1、NaN 和 NaN 相等 2、+0 和 -0 相等
+Object.assign()		将多个对象的属性混合到一起（后面覆盖前面）
+Object.getPrototypeOf()	获取一个对象的隐式原型
+Object.setPrototypeOf()	设置一个对象的隐式原型
+Object.create()		创建一个新对象，同时设置新对象的隐式原型
+Object.keys()		返回 包含所有给定对象自有可枚举字符串属性名称 的数组
+Object.values()		返回 包含给定对象所有自有可枚举字符串属性的值 的数组
+Object.defineProperty()	向对象添加一个由给定描述符描述的命名属性
+Object.defineProperties()	向对象添加多个由给定描述符描述的命名属性
+
+
+
+
+
+Array.from()		从数组类对象或可迭代对象创建一个新的 Array 实例
+Array.fromAsync()		从异步可迭代、可迭代或类数组对象创建新的 Array 实例
+Array.isArray()		如果参数是数组则返回 true ，否则返回 false 
+Array.of()			创建一个新的 Array 实例，具有可变数量的参数，而不管参数的数量或类型
+Array.prototype.at()		返回给定索引处的数组元素。接受从最后一项往回计算的负整数
+Array.prototype.concat()	返回一个新数组，该数组由被调用的数组与其他数组或值连接形成
+Array.prototype.entries()	返回一个新的数组迭代器对象，其中包含数组中每个索引的键/值对
+Array.prototype.every()	如果调用数组中的每个元素都满足测试函数，则返回 true
+Array.prototype.some()	如果调用数组中至少有一个元素满足提供的测试函数，则返回 true
+Array.prototype.fill()	用静态值填充数组中从开始索引到结束索引的所有元素
+Array.prototype.filter()	返回一个新数组，其中包含调用所提供的筛选函数返回为 true 的所有数组元素
+Array.prototype.find()	返回数组中满足提供的测试函数的第一个元素的值，没有则返回 undefined
+Array.prototype.findIndex()	返回数组中满足提供的测试函数的第一个元素的索引，没有则返回 -1
+Array.prototype.findLast()	返回数组中满足提供的测试函数的最后一个元素的值，没有则返回 undefined
+Array.prototype.findLastIndex()返回数组中满足所提供测试函数的最后一个元素的索引，没有则返回 -1
+
+Array.prototype.forEach()	对调用数组中的每个元素调用给定的函数，遍历数组，没有返回值
+Array.prototype.map()	返回一个新数组，其中包含对调用数组中的每个元素调用函数的结果
+
+Array.prototype.includes()	确定调用数组是否包含一个值，根据情况返回 true 或 false
+Array.prototype.indexOf()	返回在调用数组中可以找到给定元素的第一个（最小）索引
+Array.prototype.join()	将数组的所有元素连接为字符串
+Array.prototype.keys()	返回一个新的数组迭代器，其中包含调用数组中每个索引的键
+Array.prototype.values()	返回一个新的数组迭代器对象，该对象包含数组中每个索引的值
+
+Array.prototype.pop()	从数组中移除最后一个元素并返回该元素（改变原数组）
+Array.prototype.push()	在数组末尾添加一个或多个元素，并返回数组新的 length（改变原数组）
+Array.prototype.shift()	从数组中移除第一个元素并返回该元素（改变原数组）
+Array.prototype.unshift()	数组前面新增一个元素，并返回新数组（改变原数组）
+Array.prototype.reverse()	反转数组（改变原数组）
+Array.prototype.sort()	对数组的元素进行排序并返回该数组（改变原数组）
+Array.prototype.splice()	从数组中添加或删除元素（改变原数组）
+
+Array.prototype.slice()	提取调用数组的一部分并返回一个新数组
+Array.prototype.flat()	返回一个新数组，所有子数组元素递归地连接到其中，直到指定的深度
+Array.prototype.reduce()	对数组中的每个元素按序执行一个提供的 reducer 函数，每一次运行 reducer 会将先前元素的计算结果作为参数传入，最后将其结果汇总为单个返回值
+
+
+
+
+
+Function.prototype.apply(thisArg [, argsArray])	
+调用一个函数并将其 this 的值设置为提供的 thisArg。参数可用以通过数组对象传递
+
+Function.prototype.bind(thisArg[, arg1[, arg2[, ...argN]]])	
+创建一个新的函数，该函数在调用时，会将 this 设置为提供的 thisArg。在调用新绑定的函数时，可选的参数序列（[, arg1[, arg2[, ...argN]]]）会被提前添加到参数序列中（译者注：即调用绑定创建的函数时，传递的参数会接续在可选参数序列后）
+
+Function.prototype.call(thisArg[, arg1, arg2, ...argN])		
+调用一个函数，并将其 this 值设置为提供的值。也可以选择传输新参数
+
+
+
